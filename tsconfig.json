@@ -2,12 +2,14 @@
     "compilerOptions": {
         "target": "es6",
         "module": "commonjs",
-        "outDir": "./dist",
-        "rootDir": ".",
+        "outDir": "dist",
+        "rootDir": "src",
         "strict": true,
         "moduleResolution": "node",
         "esModuleInterop": true,
         "jsx": "react",
         "resolveJsonModule": true
-    }
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules"]
 }
