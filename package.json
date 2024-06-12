@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc -p .",
+    "build": "tsc --build",
+    "clean": "tsc --build --clean",
     "start": "node dist/server.js"
   },
   "author": "",
@@ -15,12 +16,13 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "mysql2": "^3.10.0"
+    "mysql2": "^3.10.0",
+    "typescript": "^5.4.5"
   },
-  "type": "module",
   "devDependencies": {
     "@types/body-parser": "^1.19.5",
     "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21"
+    "@types/express": "^4.17.21",
+    "ts-node": "^10.9.2"
   }
 }
