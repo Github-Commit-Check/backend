@@ -9,14 +9,13 @@ const port:number = 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
+import connectRouter, { use } from "./routes/connect";
+import viewRouter from "./routes/view";
 
-import { pool } from "./utils/db";
+app.use("/connect", connectRouter);
+app.use("/view", viewRouter);
 
 app.get("/", async (req:Request, res:Response) => {
-    
-    const [rows, fields] = await pool.query("SELECT 1");
-
-    console.log(rows, fields);
 
   res.send("Hello World");
 });
