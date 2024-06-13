@@ -1,9 +1,9 @@
-import mysql from 'mysql2/promise';
+import mysql, { PoolOptions } from 'mysql2/promise';
 
 import dotenv from 'dotenv';
 dotenv.config();
 
-const dbConfig = {
+const dbConfig: PoolOptions = {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     waitForConnections: true,
