@@ -1,15 +1,17 @@
 {
-    "compilerOptions": {
-        "target": "es6",
-        "module": "commonjs",
-        "outDir": "dist",
-        "rootDir": "src",
-        "strict": true,
-        "moduleResolution": "node",
-        "esModuleInterop": true,
-        "jsx": "react",
-        "resolveJsonModule": true
-    },
-    "include": ["src/**/*.ts", "src/**/*.d.ts"],
-    "exclude": ["node_modules"]
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "jsx": "react",
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts"],
+  "exclude": ["node_modules"]
 }
