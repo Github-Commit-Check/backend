@@ -12,6 +12,9 @@
 .idea/**/dictionaries
 .idea/**/shelf
 
+# env tokens
+.env
+
 # AWS User-specific
 .idea/**/aws.xml
 
