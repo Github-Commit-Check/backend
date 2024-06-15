@@ -13,7 +13,12 @@ async function getAllCommits(
     per_page: 100,
   });
   console.log(`API response status: ${result.status}`);
-  console.log(result.data);
+  
+  // commit message만 추출
+  const commitlogs: any = result.data;
+  commitlogs.forEach((items:any) => {
+    console.log(items.commit.message);
+  });
   return result.data;
 }
 
