@@ -2,7 +2,11 @@ import express, {Request, Response} from "express"
 import bodyParser from'body-parser';
 import cors from 'cors';
 
+import { connect } from './utils/db';
+
 const app = express();
+
+connect();
 
 const port:number = 3000;
 
@@ -16,7 +20,6 @@ app.use("/connect", connectRouter);
 app.use("/view", viewRouter);
 
 app.get("/", async (req:Request, res:Response) => {
-
   res.send("Hello World");
 });
 
