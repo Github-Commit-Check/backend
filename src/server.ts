@@ -4,10 +4,6 @@ import cors from 'cors';
 
 import * as db from './utils/db';
 
-//Test
-import Info from './models/info';
-//Test
-
 const app = express();
 
 db.connect();
@@ -24,10 +20,7 @@ app.use("/connect", connectRouter);
 app.use("/view", viewRouter);
 
 app.get("/", async (req: Request, res: Response) => {
-  //Test
-  const db = Info.findOne({ owner: "sw0501" });
-  //Test
-  res.send("Hello World");
+  res.send("Hello World!");
 });
 
 app.listen(port, () => {
