@@ -11,6 +11,6 @@ const infoSchema = new Schema<DBInfo, DBUInfoModel>({
   until: { type: String, required: true, unique: true },
 });
 
-const Info = model('User', infoSchema);
+const Info = model('Info', infoSchema);
 
 export default Info;
