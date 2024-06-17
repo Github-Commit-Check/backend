@@ -2,11 +2,15 @@ import express, {Request, Response} from "express"
 import bodyParser from'body-parser';
 import cors from 'cors';
 
-import { connect } from './utils/db';
+import * as db from './utils/db';
+
+//Test
+import Info from './models/info';
+//Test
 
 const app = express();
 
-connect();
+db.connect();
 
 const port:number = 3000;
 
@@ -19,7 +23,10 @@ import viewRouter from "./routes/view";
 app.use("/connect", connectRouter);
 app.use("/view", viewRouter);
 
-app.get("/", async (req:Request, res:Response) => {
+app.get("/", async (req: Request, res: Response) => {
+  //Test
+  const db = Info.findOne({ owner: "sw0501" });
+  //Test
   res.send("Hello World");
 });
 
