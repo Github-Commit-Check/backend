@@ -23,7 +23,8 @@
     "node-schedule": "^2.1.1",
     "typescript": "^5.4.5",
     "ghrepos": "^2.1.0",
-    "mysql2": "^3.10.0"
+    "mysql2": "^3.10.0",
+    "dayjs": "^1.11.11"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.5",
