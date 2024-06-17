@@ -6,6 +6,18 @@ import dummyData from "../assets/dummyCommitData.json";
 
 dayjs.extend(isBetween);
 
+interface CommitData {
+  message: string;
+  date: string;
+}
+
+interface TimeIntervalData {
+  startDate: string;
+  endDate: string;
+  dayOfWeek: number;
+  committers: string[];
+}
+
 // TODO : 사용자가 입력한 정보를 받아서 스케줄러에 등록하기
 const setJob = (): void => {
   // every sunday 2:30pm
@@ -17,7 +29,7 @@ const setJob = (): void => {
   saveDB();
 };
 
-const processData = (datas: any): any => {
+const processData = (datas: { data: CommitData[] }): { data: TimeIntervalData[] } | undefined => {
   // day of week (0 - 7) (0 or 7 is Sun)
 
   // 1. 사용자가 어떤 요일에 체크를 하는지 받아오기
@@ -48,7 +60,7 @@ const processData = (datas: any): any => {
   }
 
   // 5. 정보를 담을 배열 선언
-  const output: any = {
+  const output: { data: TimeIntervalData[] } = {
     data: Array.from({ length: checkDayOfWeek.length }),
   };
 
@@ -85,7 +97,7 @@ const processData = (datas: any): any => {
 };
 
 // 커밋 메시지에서 이름 추출
-const getCommitter = (commitInfo: any): string => {
+const getCommitter = (commitInfo: CommitData): string => {
   const { message } = commitInfo;
   return message.split("_")[0];
 };
