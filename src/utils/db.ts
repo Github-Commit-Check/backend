@@ -5,8 +5,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 function connect() {
-
-    console.log("connecting");
     
     const mongoURI = process.env.MONGODB_URI;
 
