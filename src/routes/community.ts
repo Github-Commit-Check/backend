@@ -3,18 +3,6 @@ import * as community from '../services/community';
 
 const router: Router = express.Router();
 
-router.get('/', async (req:Request, res:Response) => {
-    return res.status(200).json({
-        message: community.test()
-    });
-})
-
-router.get('/db', async (req:Request, res:Response) => {
-    return res.status(200).json({
-        message: community.dbTest()
-    });
-})
-
 router.get('/send-message/:kind', async (req: Request, res: Response) => { 
     const { message } = req.body;
     const { kind } = req.params;
