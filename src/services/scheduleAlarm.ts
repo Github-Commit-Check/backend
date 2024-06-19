@@ -15,21 +15,57 @@ interface TimeIntervalData {
   startDate: string;
   endDate: string;
   dayOfWeek: number;
-  committers: string[];
+  committed: string[];
+  uncommitted: string[];
+}
+
+interface DB {
+  // 레포지토리 정보
+  repo: {
+    id: String;
+    name: String;
+  };
+  // 레포지토리 소유자 정보
+  owner: {
+    id: String;
+    name: String;
+    // Github OAuth
+    github_access_token: String;
+  };
+  // Webhook 링크
+  webhook: {
+    // Push 이벤트 발생 시 서버로 요청할 API 주소
+    // 다른 사람들이랑 겹치지 않게 고유 주소로 생성
+    server: String;
+    // 채널에 메세지 보낼 Webhook 주소
+    discord: String;
+    slack: String;
+    mattermost: String;
+  };
+  // 스케줄링 일정
+  schedule: [
+    {
+      day: String;
+      time: String;
+    }
+  ];
 }
 
 // TODO : 사용자가 입력한 정보를 받아서 스케줄러에 등록하기
 const setJob = (): void => {
   // every sunday 2:30pm
   const { hour, minute, dayOfWeek } = { hour: 14, minute: 30, dayOfWeek: 7 };
-  const job = schedule.scheduleJob({ hour, minute, dayOfWeek }, function () {
+  const job = schedule.scheduleJob({ hour, minute, dayOfWeek }, () => {
     const datas = getCommits();
     sendMessage();
   });
   saveDB();
 };
 
-const processData = (datas: { data: CommitData[] }): { data: TimeIntervalData[] } | undefined => {
+const processData = (datas: {
+  contributors: string[];
+  data: CommitData[];
+}): { data: TimeIntervalData[] } | undefined => {
   // day of week (0 - 7) (0 or 7 is Sun)
 
   // 1. 사용자가 어떤 요일에 체크를 하는지 받아오기
@@ -65,18 +101,19 @@ const processData = (datas: { data: CommitData[] }): { data: TimeIntervalData[] 
   };
 
   // 6. 배열에 들어가는 객체엔 커밋 기간, 요일, 커밋한 사람에 대한 정보가 들어감
+  const { contributors, data } = datas;
   const now = dayjs();
   for (let i = 0; i < dateDiffArray.length; i++) {
     output.data[i] = {
       startDate: now.add(dateDiffArray[i][0], "day").format("YYMMDD"),
       endDate: now.add(dateDiffArray[i][1], "day").format("YYMMDD"),
       dayOfWeek: now.add(dateDiffArray[i][1], "day").day(),
-      committers: [],
+      committed: [],
+      uncommitted: [...contributors],
     };
   }
 
   // 7. 반복문을 통해 누가 해당 기간에 커밋했는지 체크
-  const { data } = datas;
   for (const commitInfo of data) {
     let idx = -1;
     for (let i = 0; i < output.data.length; i++) {
@@ -87,9 +124,14 @@ const processData = (datas: { data: CommitData[] }): { data: TimeIntervalData[] 
       }
     }
 
+    // findIdx와 splice 시간복잡도 각각 n
     if (idx !== -1) {
       const committer = getCommitter(commitInfo);
-      output.data[idx].committers.push(committer);
+      const findIdx = output.data[idx].uncommitted.indexOf(committer);
+      if (findIdx !== -1) {
+        output.data[idx].uncommitted.splice(findIdx, 1);
+        output.data[idx].committed.push(committer);
+      }
     }
   }
 
@@ -106,12 +148,19 @@ const getCommitter = (commitInfo: CommitData): string => {
 const saveDB = (): void => {};
 
 // TODO : connectRepository 모듈에서 GitHub 커밋 가져오는 함수 호출하기
-
 const getCommits = (): any => {
   return dummyData;
 };
 
 // TODO : 사용자가 지정한 Community에 메시지 전송하기
 const sendMessage = (): void => {};
+
+const test = () => {
+  const commitData = getCommits();
+  const output = processData(commitData);
+  console.log(JSON.stringify(output));
+};
+
+test();
 
 export { setJob, processData };
