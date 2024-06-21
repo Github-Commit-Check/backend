@@ -1,19 +1,27 @@
 import { Model } from 'mongoose';
-import { StringMappingType } from 'typescript';
 
 export interface DBInfo {
-    owner: String,
-    repo: String,
-    date: String,
-    since: String,
-    until: String,
+    repo: {
+        id: String,
+        name: String
+    },
+    owner: {
+        id: String,
+        name: String,
+        github_access_token: String
+    },
+    webhook: {
+        server: String,
+        discord: String,
+        slack: String,
+        mattermost: String
+    },
     schedule: [
         {
-            week: string,
-            date: string,
-            time: string,
+            day: String,
+            time: String,
         }
     ]
 }
 
-export interface DBUInfoModel extends Model<DBInfo> {}
+export interface DBInfoModel extends Model<DBInfo> {}
