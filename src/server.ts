@@ -15,9 +15,11 @@ app.use(bodyParser.json());
 
 import connectRouter, { use } from "./routes/connect";
 import viewRouter from "./routes/view";
+import settingRouter from "./routes/setting";
 
 app.use("/connect", connectRouter);
 app.use("/view", viewRouter);
+app.use("/setting", settingRouter);
 
 app.get("/", async (req: Request, res: Response) => {
   res.send("Hello World!");

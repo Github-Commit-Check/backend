@@ -1,4 +1,3 @@
-import { pool } from "../utils/db";
 import axios, { AxiosResponse } from 'axios';
 
 import dotenv from 'dotenv';
