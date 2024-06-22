@@ -48,8 +48,6 @@ async function listCommits() {
             return;
           }
 
-          console.log(refData);
-
           const commits = refData
             .map((item) => {
               const commitMessage = item.commit.message;
@@ -57,8 +55,8 @@ async function listCommits() {
               const dateRegex = /_(\d{6})_/; // Assuming the date is in the format YYMMDD
               const match = commitMessage.match(dateRegex);
               const parsedDate = match ? match[1] : "";
-              const login = item.author ? item.author.login : "unknown";
-              const id = item.author ? item.author.id : "unknown";
+              const login = item.author.login;
+              const id = item.author.id;
 
               return parsedDate
                 ? {
