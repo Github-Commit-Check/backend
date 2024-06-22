@@ -26,7 +26,7 @@ async function getAllCommits(
   return result.data;
 }
 
-console.log(getAllCommits("ssafy-11th-seoul10", "2day-1algo", "2024-06-13", "2024-06-15"));
+// console.log(getAllCommits("ssafy-11th-seoul10", "2day-1algo", "2024-06-13", "2024-06-15"));
 
 // 병서 버전
 async function listCommits() {
@@ -36,38 +36,46 @@ async function listCommits() {
       token: process.env.REACT_APP_GITHUB_TOKEN,
     };
 
-  return new Promise<{ message: string; date: string }[]>((resolve, reject) => {
-    ghrepos.listCommits(
-      authOptions,
-      "ssafy-11th-seoul10",
-      "2day-1algo",
-      (err: Error | null, refData: any[]) => {
-        if (err) {
-          reject(err);
-          return;
+  return new Promise<{ message: string; date: string; login: string; id: string }[]>(
+    (resolve, reject) => {
+      ghrepos.listCommits(
+        authOptions,
+        "ssafy-11th-seoul10",
+        "2day-1algo",
+        (err: Error | null, refData: any[]) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+
+          console.log(refData);
+
+          const commits = refData
+            .map((item) => {
+              const commitMessage = item.commit.message;
+
+              const dateRegex = /_(\d{6})_/; // Assuming the date is in the format YYMMDD
+              const match = commitMessage.match(dateRegex);
+              const parsedDate = match ? match[1] : "";
+              const login = item.author ? item.author.login : "unknown";
+              const id = item.author ? item.author.id : "unknown";
+
+              return parsedDate
+                ? {
+                    message: commitMessage,
+                    date: parsedDate,
+                    login: login,
+                    id: id,
+                  }
+                : null;
+            })
+            .filter((commit) => commit !== null);
+
+          resolve(commits as { message: string; date: string; login: string; id: string }[]);
         }
-
-        const commits = refData
-          .map((item) => {
-            const commitMessage = item.commit.message;
-
-            const dateRegex = /_(\d{6})_/; // Assuming the date is in the format YYMMDD
-            const match = commitMessage.match(dateRegex);
-            const parsedDate = match ? match[1] : "";
-
-            return parsedDate
-              ? {
-                  message: commitMessage,
-                  date: parsedDate,
-                }
-              : null;
-          })
-          .filter((commit) => commit !== null);
-
-        resolve(commits as { message: string; date: string }[]);
-      }
-    );
-  });
+      );
+    }
+  );
 }
 
 function test() {
