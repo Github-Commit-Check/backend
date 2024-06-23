@@ -3,15 +3,17 @@ import axios, { AxiosResponse } from 'axios';
 import dotenv from 'dotenv';
 dotenv.config();
 
-async function discord(message: string) {
+async function discord(content: string) {
     const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL;
 
     if (typeof discordWebhookUrl === "undefined") {
         throw new Error("Env const `discordWebhookUrl` is not defined");
     }
 
+    console.log(content);
+
     return await axios.post(discordWebhookUrl, {
-        content: message,
+        content: content,
     });
 }
 
