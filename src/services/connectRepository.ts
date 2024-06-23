@@ -5,9 +5,9 @@ import { octokit } from "../api/octokit";
 // 수영 버전
 async function getAllCommits(
   owner: string,
-  repo: string, 
+  repo: string,
   since: string,
-  until: string,
+  until: string
 ): Promise<Endpoints["GET /repos/{owner}/{repo}/commits"]["response"]["data"]> {
   const result = await octokit.repos.listCommits({
     owner,
@@ -20,13 +20,13 @@ async function getAllCommits(
 
   // commit message만 추출
   const commitlogs: any = result.data;
-  commitlogs.forEach((items:any) => {
+  commitlogs.forEach((items: any) => {
     console.log(items.commit.message);
   });
   return result.data;
 }
 
-console.log(getAllCommits("ssafy-11th-seoul10", "2day-1algo", "2024-06-13", "2024-06-15"));
+// console.log(getAllCommits("ssafy-11th-seoul10", "2day-1algo", "2024-06-13", "2024-06-15"));
 
 // 병서 버전
 async function listCommits() {
@@ -36,25 +36,44 @@ async function listCommits() {
       token: process.env.REACT_APP_GITHUB_TOKEN,
     };
 
-  return new Promise<void>((resolve, reject) => {
-    ghrepos.listCommits(
-      authOptions,
-      "ssafy-11th-seoul10",
-      "2day-1algo",
-      (err: Error | null, refData: any[]) => {
-        if (err) {
-          reject(err);
-          return;
+  return new Promise<{ message: string; date: string; login: string; id: string }[]>(
+    (resolve, reject) => {
+      ghrepos.listCommits(
+        authOptions,
+        "ssafy-11th-seoul10",
+        "2day-1algo",
+        (err: Error | null, refData: any[]) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+
+          const commits = refData
+            .map((item) => {
+              const commitMessage = item.commit.message;
+
+              const dateRegex = /_(\d{6})_/; // Assuming the date is in the format YYMMDD
+              const match = commitMessage.match(dateRegex);
+              const parsedDate = match ? match[1] : "";
+              const login = item.author.login;
+              const id = item.author.id;
+
+              return parsedDate
+                ? {
+                    message: commitMessage,
+                    date: parsedDate,
+                    login: login,
+                    id: id,
+                  }
+                : null;
+            })
+            .filter((commit) => commit !== null);
+
+          resolve(commits as { message: string; date: string; login: string; id: string }[]);
         }
-
-        refData.forEach((item) => {
-          console.log(item.commit.message);
-        });
-
-        resolve();
-      }
-    );
-  });
+      );
+    }
+  );
 }
 
 function test() {
