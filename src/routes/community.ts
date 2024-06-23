@@ -4,13 +4,14 @@ import * as community from '../services/community';
 const router: Router = express.Router();
 
 router.post('/send-message/:kind', async (req: Request, res: Response) => { 
-    const { message } = req.body;
+    const JSONbody: JSON = req.body;
+    
+    const message: string = JSONbody.toString();
     const { kind } = req.params;
 
     if (!message) {
         return res.status(400).send('Message is required');
     }
-
     try {
 
         const response = await community.sendMessage(message,kind);

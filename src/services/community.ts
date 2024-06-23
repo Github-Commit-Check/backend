@@ -6,14 +6,12 @@ dotenv.config();
 async function discord(message: string) {
     const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL;
 
-    console.log(message);
-
     if (typeof discordWebhookUrl === "undefined") {
         throw new Error("Env const `discordWebhookUrl` is not defined");
     }
 
     return await axios.post(discordWebhookUrl, {
-        text: message,
+        content: message,
     });
 }
 
