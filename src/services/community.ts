@@ -6,6 +6,8 @@ dotenv.config();
 async function discord(message: string) {
     const discordWebhookUrl = process.env.MATTERMOST_WEBHOOK_URL;
 
+    console.log(message);
+
     if (typeof discordWebhookUrl === "undefined") {
         throw new Error("Env const `discordWebhookUrl` is not defined");
     }
