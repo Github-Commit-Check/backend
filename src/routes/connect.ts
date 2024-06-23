@@ -17,9 +17,10 @@ router.get("/db", async (req: Request, res: Response) => {
 
 router.get("/commits", async (req: Request, res: Response) => {
   try {
-    await connect.listCommits();
+    const commits = await connect.listCommits();
     res.status(200).json({
       message: "Commits listed successfully",
+      data: commits,
     });
   } catch (error) {
     res.status(500).json({
