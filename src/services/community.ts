@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 async function discord(message: string) {
-    const discordWebhookUrl = process.env.MATTERMOST_WEBHOOK_URL;
+    const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL;
 
     console.log(message);
 
