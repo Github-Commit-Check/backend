@@ -3,7 +3,7 @@ import * as community from '../services/community';
 
 const router: Router = express.Router();
 
-router.get('/send-message/:kind', async (req: Request, res: Response) => { 
+router.post('/send-message/:kind', async (req: Request, res: Response) => { 
     const { message } = req.body;
     const { kind } = req.params;
 
