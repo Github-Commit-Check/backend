@@ -22,3 +22,5 @@ Github Commit Check 웹 서비스 백엔드
 > Feat: Mattermost API 연동 기능 추가
 > Docs: README.md 수정
 > Fix: Mattermost API KEY 인식 불가 에러 수정
+
+test
