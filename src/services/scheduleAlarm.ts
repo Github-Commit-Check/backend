@@ -1,5 +1,5 @@
 import { pool } from "../utils/db";
-import { processData, getCommits } from "../utils/data";
+import { getMessage } from "../utils/data";
 import { sendMessage } from "./community";
 import schedule from "node-schedule";
 
@@ -40,9 +40,7 @@ const setJob = (): void => {
   // every sunday 2:30pm
   const { hour, minute, dayOfWeek } = { hour: 16, minute: 47, dayOfWeek: 2 };
   const job = schedule.scheduleJob({ hour, minute, dayOfWeek }, () => {
-    const datas = getCommits();
-    const processedData = processData(datas);
-    sendMessage(JSON.stringify(processedData), "discord");
+    sendMessage("message", "discord");
   });
   saveDB();
 };
@@ -51,11 +49,9 @@ const setJob = (): void => {
 const saveDB = (): void => {};
 
 const test = () => {
-  const commitData = getCommits();
-  const output = processData(commitData);
-  console.log(JSON.stringify(output));
+  sendMessage("123", "discord");
 };
 
 test();
 
-export { setJob, processData };
+export { setJob };
