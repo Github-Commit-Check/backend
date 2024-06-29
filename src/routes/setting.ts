@@ -5,7 +5,7 @@ import { DBInfo } from "../@types/db.interface";
 const router: Router = express.Router();
 
 //Get Setting Infos
-router.get("/", async (req: Request, res: Response) => {
+router.get("/:owner_id/:repo_name", async (req: Request, res: Response) => {
 
     try {
         const ownerId:string = req.params.owner_id;
@@ -13,9 +13,10 @@ router.get("/", async (req: Request, res: Response) => {
     
         const settingInfo = await setting.getInfo(ownerId, repoName);
     
+        console.log(settingInfo);
         if (settingInfo) {
             return res.status(200).json({
-                info_list: settingInfo
+                info: settingInfo
             });        
         }
         else {
@@ -47,7 +48,7 @@ router.post("/", async (req: Request, res: Response) => {
                 github_access_token: req.body.owner.github_access_token
             },
             webhook: {
-                server: "",
+                server: "test",
                 discord: req.body.webhook.discord,
                 slack: req.body.owner.slack,
                 mattermost: req.body.owner.mattermost
@@ -95,17 +96,17 @@ router.put("/", async (req: Request, res: Response) => {
                 github_access_token: req.body.owner.github_access_token
             },
             webhook: {
-                server: "",
+                server: "TEST",
                 discord: req.body.webhook.discord,
-                slack: req.body.owner.slack,
-                mattermost: req.body.owner.mattermost
+                slack: req.body.webhook.slack,
+                mattermost: req.body.webhook.mattermost
             },
             schedule: [
                 req.body.schedule
             ]
         }
         
-        const settingInfo = await setting.saveInfo(dbInfo);
+        const settingInfo = await setting.modifyInfo(dbInfo);
 
         if (settingInfo) {
             return res.status(200).json({
@@ -120,39 +121,19 @@ router.put("/", async (req: Request, res: Response) => {
         console.error(error);
         return res.status(500).json({
             message: "Failed to Setting Update",
-            error: error
         });
     }
 });
   
 
 //Delete Setting
-router.delete("/", async (req: Request, res: Response) => {
+router.delete("/:owner_id/:repo_name", async (req: Request, res: Response) => {
     try {
 
+        const ownerId:string = req.params.owner_id;
+        const repoName:string = req.params.repo_name;
 
-        const dbInfo: DBInfo = {
-            repo: {
-                id: req.body.repo.id,
-                name: req.body.repo.name
-            },
-            owner: {
-                id: req.body.owner.id,
-                name: req.body.owner.name,
-                github_access_token: req.body.owner.github_access_token
-            },
-            webhook: {
-                server: "",
-                discord: req.body.webhook.discord,
-                slack: req.body.owner.slack,
-                mattermost: req.body.owner.mattermost
-            },
-            schedule: [
-                req.body.schedule
-            ]
-        }
-
-        const settingInfo = await setting.deleteInfo(dbInfo);
+        const settingInfo = await setting.deleteInfo(ownerId,repoName);
 
         if (settingInfo) {
             return res.status(200).json({
