@@ -28,11 +28,11 @@ async function getInfo(ownerId: string, repoName: string) {
   }
 }
 
-async function modifyInfo(dbInfo: DBInfo) {
+async function modifyInfo(ownerId:String, repoName:String, dbInfo: DBInfo) {
   try {
     const fillter = {
-      "owner.id": dbInfo.owner.id,
-      "repo.name": dbInfo.repo.name,
+      "owner.id": ownerId,
+      "repo.name": repoName,
     };
     const update = {
       "owner.github_access_token": dbInfo.owner.github_access_token,

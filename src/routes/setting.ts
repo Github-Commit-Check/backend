@@ -13,7 +13,6 @@ router.get("/:owner_id/:repo_name", async (req: Request, res: Response) => {
     
         const settingInfo = await setting.getInfo(ownerId, repoName);
     
-        console.log(settingInfo);
         if (settingInfo) {
             return res.status(200).json({
                 info: settingInfo
@@ -83,8 +82,12 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 //Modify Setting
-router.put("/", async (req: Request, res: Response) => {
+router.put("/:owner_id/:repo_name", async (req: Request, res: Response) => {
     try {
+
+        const ownerId = req.params.owner_id;
+        const repoName = req.params.repo_name;
+
         const dbInfo: DBInfo = {
             repo: {
                 id: req.body.repo.id,
@@ -106,7 +109,7 @@ router.put("/", async (req: Request, res: Response) => {
             ]
         }
         
-        const settingInfo = await setting.modifyInfo(dbInfo);
+        const settingInfo = await setting.modifyInfo(ownerId, repoName, dbInfo);
 
         if (settingInfo) {
             return res.status(200).json({
