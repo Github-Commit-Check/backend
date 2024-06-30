@@ -1,11 +1,12 @@
 import express, { Request, Response, Router } from 'express'
 import * as community from '../services/community';
 import { Commit } from "../@types/commit.interface";
+import * as setting from "../services/setting";
 
 const router: Router = express.Router();
 
-router.post('/send-message/:kind', async (req: Request, res: Response) => { 
-    
+router.post('/message', async (req: Request, res: Response) => { 
+
     // TODO commits 배열로 들어오는 거 처리
     const {
         repository: {
@@ -31,9 +32,11 @@ router.post('/send-message/:kind', async (req: Request, res: Response) => {
         }
     }:Commit = req.body;
 
-    // TODO parameter 대신 DB에 저장된 정보 가져오기
-    const { kind } = req.params;
+    const settingInfo = await setting.getInfo(ownerId, repoName);
 
+    console.log(settingInfo);
+
+    const kind: string = "discord";
     const content: string = JSON.stringify({
         repository: {
             id: repoId,
