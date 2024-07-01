@@ -1,6 +1,6 @@
 {
   "name": "github-commit-check",
-  "version": "1.0.4",
+  "version": "1.0.8",
   "description": "",
   "main": "dist/server.js",
   "types": "dist/server.d.ts",
@@ -40,6 +40,8 @@
   },
   "files": [
     "dist",
-    "src"
+    "src/services/community.ts",
+    "src/services/connectRepository.ts",
+    "src/services/scheduleAlarm.ts"
   ]
 }

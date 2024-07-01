@@ -1,12 +1,5 @@
 !/dist/**
 node_modules
 dist
-/src/api/
-/src/@types/
-/src/assets/
-/src/models/
-/src/routes/
-/src/utils/
-/src/server.ts
-/src/services/settings.ts
+src/services/setting.ts
 README.md
