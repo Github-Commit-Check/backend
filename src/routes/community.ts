@@ -1,5 +1,6 @@
 import express, { Request, Response, Router } from 'express'
 import * as community from '../services/community';
+import { Commit } from "../@types/commit.interface";
 
 const router: Router = express.Router();
 
@@ -28,7 +29,7 @@ router.post('/send-message/:kind', async (req: Request, res: Response) => {
         head_commit: {
             id: headCommitId
         }
-    } = req.body;
+    }:Commit = req.body;
 
     // TODO parameter 대신 DB에 저장된 정보 가져오기
     const { kind } = req.params;
