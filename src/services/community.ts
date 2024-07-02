@@ -19,6 +19,7 @@ async function sendCommitToDiscord(content: string, discordWebhookUrl:string) {
   //   throw new Error("Env const `discordWebhookUrl` is not defined");
   // }
 
+  // TODO Discord 임베드 메세지 구현
   return await axios.post(discordWebhookUrl, {
     content: content,
   });
@@ -44,6 +45,9 @@ async function sendCommitToMattermost(content: string, mattermostWebhookUrl:stri
     //     throw new Error("Env const `mattermostWebhookUrl` is not defined");
     // }
 
+    // TODO mattermost 메세지 구현
+  
+  
     return await axios.post(mattermostWebhookUrl, {
         text: content,
     });
