@@ -11,10 +11,10 @@ export interface DBInfo {
         github_access_token: String
     },
     webhook: {
-        server: String,
-        discord: String,
-        slack: String,
-        mattermost: String
+        server?: String,
+        discord?: String,
+        slack?: String,
+        mattermost?: String
     },
     schedule: {
         hour: Number,
