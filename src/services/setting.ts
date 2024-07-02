@@ -28,7 +28,7 @@ async function getInfo(ownerId: string, repoName: string) {
   }
 }
 
-async function modifyInfo(ownerId:String, repoName:String, dbInfo: DBInfo) {
+async function modifyInfo(ownerId: String, repoName: String, dbInfo: DBInfo) {
   try {
     const fillter = {
       "owner.id": ownerId,
