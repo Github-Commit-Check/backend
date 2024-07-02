@@ -1,4 +1,3 @@
-import { pool } from "../utils/db";
 import { getMessage } from "../utils/data";
 import { sendMessage } from "./community";
 import schedule from "node-schedule";
@@ -27,12 +26,11 @@ interface DB {
     mattermost: String;
   };
   // 스케줄링 일정
-  schedule: [
-    {
-      day: String;
-      time: String;
-    }
-  ];
+  schedule: {
+    hour: Number,
+    minute: Number,
+    dayOfWeek: Number
+  };
 }
 
 // TODO : 사용자가 입력한 정보를 받아서 스케줄러에 등록하기
@@ -40,7 +38,7 @@ const setJob = (): void => {
   // every sunday 2:30pm
   const { hour, minute, dayOfWeek } = { hour: 16, minute: 47, dayOfWeek: 2 };
   const job = schedule.scheduleJob({ hour, minute, dayOfWeek }, () => {
-    sendMessage("message", "discord");
+    sendMessage("message", { discord: "https://google.com"});
   });
   saveDB();
 };
@@ -49,7 +47,7 @@ const setJob = (): void => {
 const saveDB = (): void => {};
 
 const test = () => {
-  sendMessage("123", "discord");
+  sendMessage("123", { discord: "https://google.com"});
 };
 
 test();
