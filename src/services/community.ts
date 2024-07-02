@@ -3,6 +3,7 @@ import axios, { AxiosResponse } from "axios";
 import dotenv from "dotenv";
 import * as connect from "../services/connectRepository";
 import { format, startOfWeek, parse } from "date-fns";
+import { DBInfo } from "../@types/db.interface";
 
 dotenv.config();
 
@@ -11,42 +12,42 @@ const Mattermost = require("node-mattermost");
 const hookurl = "https://meeting.ssafy.com/hooks/jokmtk4z8prazk8bjmqmy7cw5h";
 const mattermost = new Mattermost(hookurl);
 
-async function discord(message: string) {
-  const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL;
+async function sendCommitToDiscord(content: string, discordWebhookUrl:string) {
+  //const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL;
 
-  if (typeof discordWebhookUrl === "undefined") {
-    throw new Error("Env const `discordWebhookUrl` is not defined");
-  }
+  // if (typeof discordWebhookUrl === "undefined") {
+  //   throw new Error("Env const `discordWebhookUrl` is not defined");
+  // }
 
   return await axios.post(discordWebhookUrl, {
-    text: message,
+    content: content,
   });
 }
 
-async function slack(message: string) {
-  const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL;
+async function sendCommitToSlack(content: string, slackWebhookUrl:string) {
+  //const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL;
 
-  if (typeof slackWebhookUrl === "undefined") {
-    throw new Error("Env const `slackWebhookUrl` is not defined");
-  }
+  // if (typeof slackWebhookUrl === "undefined") {
+  //   throw new Error("Env const `slackWebhookUrl` is not defined");
+  // }
 
   return await axios.post(slackWebhookUrl, {
-    text: message,
+    text: content,
   });
 }
 
-// async function mattermost(message: string) {
+async function sendCommitToMattermost(content: string, mattermostWebhookUrl:string) {
 
-//     const mattermostWebhookUrl = process.env.MATTERMOST_WEBHOOK_URL;
+    //const mattermostWebhookUrl = process.env.MATTERMOST_WEBHOOK_URL;
 
-//     if (typeof mattermostWebhookUrl === "undefined") {
-//         throw new Error("Env const `mattermostWebhookUrl` is not defined");
-//     }
+    // if (typeof mattermostWebhookUrl === "undefined") {
+    //     throw new Error("Env const `mattermostWebhookUrl` is not defined");
+    // }
 
-//     return await axios.post(mattermostWebhookUrl, {
-//         text: message,
-//     });
-// }
+    return await axios.post(mattermostWebhookUrl, {
+        text: content,
+    });
+}
 
 async function sendCommitsToMattermost(connect: {
   listCommits: () => Promise<any[]>;
@@ -113,16 +114,20 @@ async function sendCommitsToMattermost(connect: {
   }
 }
 
-async function sendMessage(message: string, kind: string) {
-  if (kind === "discord") {
-    return discord(message);
-  } else if (kind === "slack") {
-    return slack(message);
-  } else if (kind === "mattermost") {
-    return mattermost(message);
+async function sendMessage(message: string, kind: DBInfo["webhook"]) {
+  //hasOwnPropery 나중에 문제 생길 수 있어서 수정해야 함
+  //시간 + 런타임 에러 문제
+  if (kind.hasOwnProperty("discord")) {
+    return sendCommitToDiscord(message, kind.discord as string);
+  }
+  else if (kind.hasOwnProperty("slack")) {
+    return sendCommitToSlack(message, kind.slack as string);
+  } 
+  else if (kind.hasOwnProperty("mattermost")) {
+    return sendCommitToMattermost(message, kind.mattermost as string);
   } else {
     return Promise.reject(new Error("잘못된 알람 종류입니다."));
   }
 }
 
-export { discord, slack, mattermost, sendMessage};
+export { sendMessage };
