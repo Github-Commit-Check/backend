@@ -16,12 +16,11 @@ export interface DBInfo {
         slack: String,
         mattermost: String
     },
-    schedule: [
-        {
-            day: String,
-            time: String,
-        }
-    ]
+    schedule: {
+        hour: Number,
+        minute: Number,
+        dayOfWeek: Number
+    }
 }
 
 export interface DBInfoModel extends Model<DBInfo> {}

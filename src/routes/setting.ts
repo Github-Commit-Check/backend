@@ -52,9 +52,11 @@ router.post("/", async (req: Request, res: Response) => {
                 slack: req.body.owner.slack,
                 mattermost: req.body.owner.mattermost
             },
-            schedule: [
-                req.body.schedule
-            ]
+            schedule: {
+                hour: req.body.schedule.hour,
+                minute: req.body.schedule.hour,
+                dayOfWeek: req.body.schedule.hour
+            }
         }
         
         const settingInfo = await setting.saveInfo(dbInfo);
@@ -104,9 +106,11 @@ router.put("/:owner_id/:repo_name", async (req: Request, res: Response) => {
                 slack: req.body.webhook.slack,
                 mattermost: req.body.webhook.mattermost
             },
-            schedule: [
-                req.body.schedule
-            ]
+            schedule: {
+                hour: req.body.schedule.hour,
+                minute: req.body.schedule.hour,
+                dayOfWeek: req.body.schedule.hour
+            }
         }
         
         const settingInfo = await setting.modifyInfo(ownerId, repoName, dbInfo);
