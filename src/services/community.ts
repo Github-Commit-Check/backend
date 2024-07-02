@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import * as connect from "../services/connectRepository";
 import { format, startOfWeek, parse } from "date-fns";
 import { DBInfo } from "../@types/db.interface";
+import { DiscordEmbed, DiscordEmbedField } from "../@types/discord.interface";
+import { Commit } from "../@types/commit.interface";
 
 dotenv.config();
 
@@ -12,7 +14,7 @@ const Mattermost = require("node-mattermost");
 const hookurl = "https://meeting.ssafy.com/hooks/jokmtk4z8prazk8bjmqmy7cw5h";
 const mattermost = new Mattermost(hookurl);
 
-async function sendCommitToDiscord(content: string, discordWebhookUrl:string) {
+async function sendCommitToDiscord(content: Commit, discordWebhookUrl:string) {
   //const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL;
 
   // if (typeof discordWebhookUrl === "undefined") {
@@ -20,12 +22,33 @@ async function sendCommitToDiscord(content: string, discordWebhookUrl:string) {
   // }
 
   // TODO Discord 임베드 메세지 구현
+  const output: { embeds: DiscordEmbed[] } = {
+    embeds: [
+      {
+        title: "🌱 " + content.repository.name,
+        description: "커밋 내용을 알려드립니다!\n",
+        url: "https://github.com/" + content.repository.name,
+        color: 0x00ff00, // Embed의 색상 (16진수 색상 코드),
+        timestamp: new Date().toISOString(),
+        fields: [],
+      },
+    ]
+  };
+
+  for (const data of content.commits) {
+    const field: DiscordEmbedField = {
+      name: data.author.name,
+      value: "✅ 커밋 : " + data.message
+    }
+    output.embeds[0].fields.push(field);
+  }
+
   return await axios.post(discordWebhookUrl, {
-    content: content,
+    content: output,
   });
 }
 
-async function sendCommitToSlack(content: string, slackWebhookUrl:string) {
+async function sendCommitToSlack(content: Commit, slackWebhookUrl:string) {
   //const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL;
 
   // if (typeof slackWebhookUrl === "undefined") {
@@ -37,7 +60,7 @@ async function sendCommitToSlack(content: string, slackWebhookUrl:string) {
   });
 }
 
-async function sendCommitToMattermost(content: string, mattermostWebhookUrl:string) {
+async function sendCommitToMattermost(content: Commit, mattermostWebhookUrl:string) {
 
     //const mattermostWebhookUrl = process.env.MATTERMOST_WEBHOOK_URL;
 
@@ -118,7 +141,7 @@ async function sendCommitsToMattermost(connect: {
   }
 }
 
-async function sendMessage(message: string, kind: DBInfo["webhook"]) {
+async function sendMessage(message: Commit, kind: DBInfo["webhook"]) {
   //hasOwnPropery 나중에 문제 생길 수 있어서 수정해야 함
   //시간 + 런타임 에러 문제
   if (kind.hasOwnProperty("discord")) {

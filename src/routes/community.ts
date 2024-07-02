@@ -18,7 +18,7 @@ router.post("/message", async (req: Request, res: Response) => {
       commits: [
         {
           message: message,
-          timestamp: timestamp,
+          timestamp: timeStamp,
           author: { name: userName, username: userNickname },
         },
       ],
@@ -29,7 +29,7 @@ router.post("/message", async (req: Request, res: Response) => {
 
     const kind:DBInfo["webhook"] = (settingInfo as DBInfo).webhook;
 
-    const content: string = JSON.stringify({
+    const content: Commit = {
       repository: {
         id: repoId,
         name: repoName,
@@ -41,7 +41,7 @@ router.post("/message", async (req: Request, res: Response) => {
       commits: [
         {
           message: message,
-          timestamp: timestamp,
+          timestamp: timeStamp,
           author: {
             name: userName,
             username: userNickname,
@@ -51,7 +51,7 @@ router.post("/message", async (req: Request, res: Response) => {
       head_commit: {
         id: headCommitId,
       },
-    });
+    };
 
     if (!content) {
       return res.status(400).send("Message is required");
