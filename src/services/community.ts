@@ -23,7 +23,7 @@ async function dbTest() {
 }
 
 async function discord(message: string) {
-  const discordWebhookUrl = process.env.MATTERMOST_WEBHOOK_URL;
+  const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL;
 
   if (typeof discordWebhookUrl === "undefined") {
     throw new Error("Env const `discordWebhookUrl` is not defined");
@@ -136,5 +136,4 @@ async function sendMessage(message: string, kind: string) {
   }
 }
 
-export { test, dbTest, discord, slack, mattermost, sendMessage };
-sendCommitsToMattermost(connect);
+export { discord, slack, mattermost, sendMessage};

@@ -5,13 +5,13 @@ const router: Router = express.Router();
 
 router.get('/', async (req:Request, res:Response) => {
     return res.status(200).json({
-        message: schedule.test()
+        //message: schedule.test()
     });
 })
 
 router.get('/db', async (req:Request, res:Response) => {
     return res.status(200).json({
-        message: schedule.dbTest()
+        //message: schedule.dbTest()
     });
 })
 
