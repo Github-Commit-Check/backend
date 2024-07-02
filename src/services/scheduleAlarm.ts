@@ -38,7 +38,7 @@ const setJob = (): void => {
   // every sunday 2:30pm
   const { hour, minute, dayOfWeek } = { hour: 16, minute: 47, dayOfWeek: 2 };
   const job = schedule.scheduleJob({ hour, minute, dayOfWeek }, () => {
-    sendMessage("message", { discord: "https://google.com"});
+    //sendMessage("message", { discord: "https://google.com"});
   });
   saveDB();
 };
@@ -47,7 +47,7 @@ const setJob = (): void => {
 const saveDB = (): void => {};
 
 const test = () => {
-  sendMessage("123", { discord: "https://google.com"});
+  //sendMessage("123", { discord: "https://google.com"});
 };
 
 test();
