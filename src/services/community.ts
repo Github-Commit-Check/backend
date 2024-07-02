@@ -11,17 +11,6 @@ const Mattermost = require("node-mattermost");
 const hookurl = "https://meeting.ssafy.com/hooks/jokmtk4z8prazk8bjmqmy7cw5h";
 const mattermost = new Mattermost(hookurl);
 
-function test() {
-  const str: string = "scheduleAlarm";
-
-  return str;
-}
-
-async function dbTest() {
-  const [rows, fields] = await pool.query("SELECT 1");
-  return rows;
-}
-
 async function discord(message: string) {
   const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL;
 
