@@ -39,7 +39,7 @@ async function modifyInfo(ownerId: String, repoName: String, dbInfo: DBInfo) {
       "webhook.discord": dbInfo.webhook.discord,
       "webhook.slack": dbInfo.webhook.slack,
       "webhook.mattermost": dbInfo.webhook.mattermost,
-      schedule: [dbInfo.schedule],
+      "schedule": dbInfo.schedule,
     };
 
     const settingInfo = await Info.findOneAndUpdate(fillter, update, {
