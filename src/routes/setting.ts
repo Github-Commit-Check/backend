@@ -1,6 +1,7 @@
 import express, { Request, Response, Router } from "express";
 import * as setting from '../services/setting';
 import { DBInfo } from "../@types/db.interface";
+import { setJob } from "../services/scheduleAlarm";
 
 const router: Router = express.Router();
 
@@ -62,6 +63,7 @@ router.post("/", async (req: Request, res: Response) => {
         const settingInfo = await setting.saveInfo(dbInfo);
 
         if (settingInfo) {
+            setJob(settingInfo);
             return res.status(200).json({
                 message: "Setting added successfully"
             });     
