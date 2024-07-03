@@ -1,50 +1,62 @@
 import { getMessage } from "../utils/data";
-import { sendMessage } from "./community";
+import { sendCommitsToMattermost, sendMessage } from "./community";
 import schedule from "node-schedule";
+import { DBInfo } from "../@types/db.interface";
 
+// const jobList = 
 interface DB {
   // 레포지토리 정보
   repo: {
-    id: String;
-    name: String;
+    id: string;
+    name: string;
   };
   // 레포지토리 소유자 정보
   owner: {
-    id: String;
-    name: String;
+    id: string;
+    name: string;
     // Github OAuth
-    github_access_token: String;
+    github_access_token: string;
   };
   // Webhook 링크
   webhook: {
     // Push 이벤트 발생 시 서버로 요청할 API 주소
     // 다른 사람들이랑 겹치지 않게 고유 주소로 생성
-    server: String;
+    server: string;
     // 채널에 메세지 보낼 Webhook 주소
-    discord: String;
-    slack: String;
-    mattermost: String;
+    discord: string;
+    slack: string;
+    mattermost: string;
   };
   // 스케줄링 일정
   schedule: {
-    hour: Number,
-    minute: Number,
-    dayOfWeek: Number
+    hour: number,
+    minute: number,
+    dayOfWeek: number
   };
 }
 
 // TODO : 사용자가 입력한 정보를 받아서 스케줄러에 등록하기
-const setJob = (): void => {
+const setJob = (settingInfo:DBInfo): void => {
   // every sunday 2:30pm
-  const { hour, minute, dayOfWeek } = { hour: 16, minute: 47, dayOfWeek: 2 };
-  const job = schedule.scheduleJob({ hour, minute, dayOfWeek }, () => {
-    //sendMessage("message", { discord: "https://google.com"});
-  });
-  saveDB();
-};
+  const jobName = settingInfo.owner.name + "/" + settingInfo.repo.name;
+  const { hour, minute, dayOfWeek } = settingInfo.schedule;
 
-// TODO : DB 종류 정한 후 사용자 정보 저장하기
-const saveDB = (): void => {};
+  if (settingInfo.webhook.discord !== undefined) {
+    // schedule.scheduleJob(jobName, { hour, minute, dayOfWeek }, () => {
+    //   sendCommitsToMattermost(settingInfo.owner.name, settingInfo.repo.name, settingInfo.webhook.mattermost as string);
+    // });
+  }
+  if (settingInfo.webhook.slack !== undefined) {
+    
+  }
+  if (settingInfo.webhook.mattermost !== undefined) {
+    //TODO 입력 날짜로 다시 바꾸기
+    schedule.scheduleJob(jobName, /*{ hour, minute, dayOfWeek }*/ '* * * * *', () => {
+      sendCommitsToMattermost(settingInfo.owner.name, settingInfo.repo.name, "main", settingInfo.webhook.mattermost as string);
+    });
+  }
+  
+};
 
 const test = () => {
   //sendMessage("123", { discord: "https://google.com"});

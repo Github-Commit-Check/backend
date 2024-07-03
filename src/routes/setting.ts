@@ -1,17 +1,18 @@
 import express, { Request, Response, Router } from "express";
 import * as setting from '../services/setting';
 import { DBInfo } from "../@types/db.interface";
+import { setJob } from "../services/scheduleAlarm";
 
 const router: Router = express.Router();
 
 //Get Setting Infos
-router.get("/:owner_id/:repo_name", async (req: Request, res: Response) => {
+router.get("/:owner_name/:repo_name", async (req: Request, res: Response) => {
 
     try {
-        const ownerId:string = req.params.owner_id;
+        const ownerName:string = req.params.owner_name;
         const repoName:string = req.params.repo_name;
     
-        const settingInfo = await setting.getInfo(ownerId, repoName);
+        const settingInfo = await setting.getInfo(ownerName, repoName);
     
         if (settingInfo) {
             return res.status(200).json({
@@ -49,8 +50,8 @@ router.post("/", async (req: Request, res: Response) => {
             webhook: {
                 server: "test",
                 discord: req.body.webhook.discord,
-                slack: req.body.owner.slack,
-                mattermost: req.body.owner.mattermost
+                slack: req.body.webhook.slack,
+                mattermost: req.body.webhook.mattermost
             },
             schedule: {
                 hour: req.body.schedule.hour,
@@ -62,6 +63,7 @@ router.post("/", async (req: Request, res: Response) => {
         const settingInfo = await setting.saveInfo(dbInfo);
 
         if (settingInfo) {
+            setJob(settingInfo);
             return res.status(200).json({
                 message: "Setting added successfully"
             });     
@@ -84,10 +86,10 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 //Modify Setting
-router.put("/:owner_id/:repo_name", async (req: Request, res: Response) => {
+router.put("/:owner_name/:repo_name", async (req: Request, res: Response) => {
     try {
 
-        const ownerId = req.params.owner_id;
+        const ownerName = req.params.owner_name;
         const repoName = req.params.repo_name;
 
         const dbInfo: DBInfo = {
@@ -108,12 +110,12 @@ router.put("/:owner_id/:repo_name", async (req: Request, res: Response) => {
             },
             schedule: {
                 hour: req.body.schedule.hour,
-                minute: req.body.schedule.hour,
-                dayOfWeek: req.body.schedule.hour
+                minute: req.body.schedule.minute,
+                dayOfWeek: req.body.schedule.dayOfWeek
             }
         }
         
-        const settingInfo = await setting.modifyInfo(ownerId, repoName, dbInfo);
+        const settingInfo = await setting.modifyInfo(ownerName, repoName, dbInfo);
 
         if (settingInfo) {
             return res.status(200).json({
@@ -134,13 +136,13 @@ router.put("/:owner_id/:repo_name", async (req: Request, res: Response) => {
   
 
 //Delete Setting
-router.delete("/:owner_id/:repo_name", async (req: Request, res: Response) => {
+router.delete("/:owner_name/:repo_name", async (req: Request, res: Response) => {
     try {
 
-        const ownerId:string = req.params.owner_id;
+        const ownerName:string = req.params.owner_name;
         const repoName:string = req.params.repo_name;
 
-        const settingInfo = await setting.deleteInfo(ownerId,repoName);
+        const settingInfo = await setting.deleteInfo(ownerName,repoName);
 
         if (settingInfo) {
             return res.status(200).json({

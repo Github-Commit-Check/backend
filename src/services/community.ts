@@ -1,6 +1,6 @@
 import axios from "axios";
 import dotenv from "dotenv";
-import * as connect from "../services/connectRepository";
+import { listCommits } from "../services/connectRepository";
 import { format, startOfWeek, parse } from "date-fns";
 import { DBInfo } from "../@types/db.interface";
 import { DiscordEmbed, DiscordEmbedField } from "../@types/discord.interface";
@@ -36,8 +36,17 @@ async function sendCommitToDiscord(content: Commit, discordWebhookUrl: string) {
 }
 
 async function sendCommitToSlack(content: Commit, slackWebhookUrl: string) {
+  // 메시지 생성
+  let messageText = "### :white_check_mark: 커밋 알림\n";
+  messageText += "|:smile: 이름|:git: 커밋 메세지|:gunpang_timer: 타임스탬프|\n";
+  messageText += "|:------:|:------------------------:|:-----------:|\n";
+
+  for (const data of content.commits) {
+    messageText += `|${data.author.name}|${data.message}|${data.timestamp}|\n`;
+  }
+
   return await axios.post(slackWebhookUrl, {
-    text: JSON.stringify(content),
+    text: messageText,
   });
 }
 
@@ -57,14 +66,14 @@ async function sendCommitToMattermost(content: Commit, mattermostWebhookUrl: str
 }
 
 async function sendCommitsToMattermost(
-  connect: { listCommits: () => Promise<any[]> },
+    ownerName:string, repoName: string, branchName: string,
   mattermostWebhookUrl: string
 ): Promise<void> {
   try {
-    const mattermost = Mattermost(mattermostWebhookUrl);
+    // const mattermost = Mattermost(mattermostWebhookUrl);
 
-    const commits: any[] = await connect.listCommits();
-
+    const commits: any[] = await listCommits(ownerName, repoName);
+      
     // 커밋을 주별, 사용자별로 그룹화
     const weeklyCommits: { [week: string]: { [user: string]: number } } = {};
 
@@ -113,12 +122,15 @@ async function sendCommitsToMattermost(
         messageText += "\n";
       });
 
-    await mattermost.send({
-      text: messageText,
-      channel_id: "95h7bi71pfyntebw8pw3bid8ay",
-    });
+      return await axios.post(mattermostWebhookUrl, {
+        text: messageText,
+      });
+    // await mattermost.send({
+    //   text: messageText,
+    // //   channel_id: "kym6455m6iywmd9js7jbkyskya",
+    // });
 
-    console.log("커밋 내역을 Mattermost에 성공적으로 전송했습니다.");
+    // console.log("커밋 내역을 Mattermost에 성공적으로 전송했습니다.");
   } catch (error) {
     console.error("커밋 내역 전송 중 오류 발생:", error);
   }
@@ -127,15 +139,15 @@ async function sendCommitsToMattermost(
 async function sendMessage(message: Commit, kind: DBInfo["webhook"]) {
   //hasOwnPropery 나중에 문제 생길 수 있어서 수정해야 함
   //시간 + 런타임 에러 문제
-  /*if (kind.hasOwnProperty("discord")) {
+  if (kind.hasOwnProperty("discord")) {
     return sendCommitToDiscord(message, kind.discord as string);
   } else if (kind.hasOwnProperty("slack")) {
     return sendCommitToSlack(message, kind.slack as string);
-  } else*/ if (kind.hasOwnProperty("mattermost")) {
+  } else if (kind.hasOwnProperty("mattermost")) {
     return sendCommitToMattermost(message, kind.mattermost as string);
   } else {
     return Promise.reject(new Error("잘못된 알람 종류입니다."));
   }
 }
 
-export { sendMessage };
+export { sendCommitsToMattermost, sendMessage };

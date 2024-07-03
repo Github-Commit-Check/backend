@@ -29,19 +29,20 @@ import { octokit } from "../api/octokit";
 // console.log(getAllCommits("ssafy-11th-seoul10", "2day-1algo", "2024-06-13", "2024-06-15"));
 
 // 병서 버전
-async function listCommits() {
+async function listCommits(ownerName: string, repoName: string) {
+  
   const ghrepos = require("ghrepos"),
     authOptions = {
       user: process.env.REACT_APP_GITHUB_USER,
       token: process.env.REACT_APP_GITHUB_TOKEN,
     };
-
+  
   return new Promise<{ message: string; date: string; login: string; id: string }[]>(
     (resolve, reject) => {
       ghrepos.listCommits(
         authOptions,
-        "ssafy-11th-seoul10",
-        "2day-1algo",
+        ownerName,
+        repoName,
         (err: Error | null, refData: any[]) => {
           if (err) {
             reject(err);
@@ -65,7 +66,13 @@ async function listCommits() {
                     login: login,
                     id: id,
                   }
-                : null;
+                : /*null*/
+                {
+                  message: commitMessage,
+                  date: parsedDate,
+                  login: login,
+                  id: id,
+                };
             })
             .filter((commit) => commit !== null);
 

@@ -5,12 +5,13 @@ const router: Router = express.Router();
 
 router.get("/commits", async (req: Request, res: Response) => {
   try {
-    const commits = await connect.listCommits();
+    const commits = await connect.listCommits("Github-Commit-Check","backend");
     res.status(200).json({
       message: "Commits listed successfully",
       data: commits,
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({
       message: "Failed to list commits",
     });

@@ -17,7 +17,7 @@ async function saveInfo(dbInfo: DBInfo) {
 async function getInfo(ownerId: string, repoName: string) {
   try {
     const fillter = {
-      "owner.id": ownerId,
+      "owner.name": ownerId,
       "repo.name": repoName,
     };
     const settingInfo = await Info.findOne(fillter);
@@ -31,7 +31,7 @@ async function getInfo(ownerId: string, repoName: string) {
 async function modifyInfo(ownerId: String, repoName: String, dbInfo: DBInfo) {
   try {
     const fillter = {
-      "owner.id": ownerId,
+      "owner.name": ownerId,
       "repo.name": repoName,
     };
     const update = {
@@ -39,7 +39,7 @@ async function modifyInfo(ownerId: String, repoName: String, dbInfo: DBInfo) {
       "webhook.discord": dbInfo.webhook.discord,
       "webhook.slack": dbInfo.webhook.slack,
       "webhook.mattermost": dbInfo.webhook.mattermost,
-      schedule: [dbInfo.schedule],
+      "schedule": dbInfo.schedule,
     };
 
     const settingInfo = await Info.findOneAndUpdate(fillter, update, {
@@ -57,7 +57,7 @@ async function modifyInfo(ownerId: String, repoName: String, dbInfo: DBInfo) {
 async function deleteInfo(ownerId: string, repoName: string) {
   try {
     const fillter = {
-      "owner.id": ownerId,
+      "owner.name": ownerId,
       "repo.name": repoName,
     };
 
