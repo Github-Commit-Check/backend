@@ -1,7 +1,7 @@
 import axios from "axios";
 import dotenv from "dotenv";
 import { listCommits } from "../services/connectRepository";
-import { format, startOfWeek, parse } from "date-fns";
+import { format, startOfWeek, parse, subWeeks } from "date-fns";
 import { DBInfo } from "../@types/db.interface";
 import { DiscordEmbed, DiscordEmbedField } from "../@types/discord.interface";
 import { Commit } from "../@types/commit.interface";
@@ -73,6 +73,10 @@ async function sendCommitsToMattermost(
     // const mattermost = Mattermost(mattermostWebhookUrl);
 
     const commits: any[] = await listCommits(ownerName, repoName);
+
+    const now = new Date();
+    const thisWeekMonday = startOfWeek(now, { weekStartsOn: 1 });
+    const lastWeekMonday = subWeeks(thisWeekMonday, 1);
       
     // 커밋을 주별, 사용자별로 그룹화
     const weeklyCommits: { [week: string]: { [user: string]: number } } = {};
@@ -82,19 +86,21 @@ async function sendCommitsToMattermost(
       if (isNaN(commitDate.getTime())) {
         return;
       }
-      const weekStart = startOfWeek(commitDate, { weekStartsOn: 1 }); // 월요일부터 시작
+      if (commitDate >= lastWeekMonday && commitDate < thisWeekMonday) {
+        const weekStart = startOfWeek(commitDate, { weekStartsOn: 1 }); // 월요일부터 시작
 
-      const weekKey = format(weekStart, "yyyy-MM-dd");
+        const weekKey = format(weekStart, "yyyy-MM-dd");
 
-      if (!weeklyCommits[weekKey]) {
-        weeklyCommits[weekKey] = {};
+        if (!weeklyCommits[weekKey]) {
+          weeklyCommits[weekKey] = {};
+        }
+
+        if (!weeklyCommits[weekKey][commit.login]) {
+          weeklyCommits[weekKey][commit.login] = 0;
+        }
+
+        weeklyCommits[weekKey][commit.login]++;
       }
-
-      if (!weeklyCommits[weekKey][commit.login]) {
-        weeklyCommits[weekKey][commit.login] = 0;
-      }
-
-      weeklyCommits[weekKey][commit.login]++;
     });
 
     // 메시지 생성
