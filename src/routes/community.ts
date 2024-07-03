@@ -27,8 +27,8 @@ router.post("/message", async (req: Request, res: Response) => {
 
     const settingInfo = await setting.getInfo(ownerId, repoName);
 
-    const kind:DBInfo["webhook"] = (settingInfo as DBInfo).webhook;
-
+    const kind: DBInfo["webhook"] = (settingInfo as DBInfo).webhook;
+    
     const content: Commit = {
       repository: {
         id: repoId,
