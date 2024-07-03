@@ -2,24 +2,24 @@ import { Model } from 'mongoose';
 
 export interface DBInfo {
     repo: {
-        id: String,
-        name: String
+        id: string,
+        name: string
     },
     owner: {
-        id: String,
-        name: String,
-        github_access_token: String
+        id: string,
+        name: string,
+        github_access_token: string
     },
     webhook: {
-        server?: String,
-        discord?: String,
-        slack?: String,
-        mattermost?: String
+        server?: string,
+        discord?: string,
+        slack?: string,
+        mattermost?: string
     },
     schedule: {
-        hour: Number,
-        minute: Number,
-        dayOfWeek: Number
+        hour: number,
+        minute: number,
+        dayOfWeek: number
     }
 }
 
