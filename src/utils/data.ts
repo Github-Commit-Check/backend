@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import dummyData from "../assets/dummyCommitData.json";
+import { listCommits } from "../services/connectRepository";
 
 dayjs.extend(isBetween);
 
@@ -42,7 +43,7 @@ const getCommitter = (commitInfo: CommitData): string => {
 
 // TODO : connectRepository 모듈에서 GitHub 커밋 가져오는 함수 호출하기
 const getCommits = (): any => {
-  return dummyData;
+  return listCommits("ssafy-11th-seoul10","2day-1algo");
 };
 
 const processData = (datas: { contributors: string[]; data: CommitData[] }): TimeIntervalData[] => {
@@ -140,8 +141,8 @@ const makeDiscordMessage = (datas: TimeIntervalData[]): { embeds: DiscordEmbed[]
   return output;
 };
 
-const getMessage = (userInfo: string, kind: string) => {
-  const commits = getCommits(); // 유저 정보로 커밋 내역 불러오기
+const getMessage = async (userInfo: string, kind: string) => {
+  const commits = await getCommits(); // 유저 정보로 커밋 내역 불러오기
   const processedData = processData(commits);
 
   if (kind === "discord") {
