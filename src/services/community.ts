@@ -8,6 +8,14 @@ import { Commit } from "../@types/commit.interface";
 
 dotenv.config();
 
+interface TimeIntervalData {
+  startDate: string;
+  endDate: string;
+  dayOfWeek: number;
+  committed: string[];
+  uncommitted: string[];
+}
+
 const Mattermost = require("node-mattermost");
 
 async function sendCommitToDiscord(content: Commit, discordWebhookUrl: string) {
@@ -32,6 +40,10 @@ async function sendCommitToDiscord(content: Commit, discordWebhookUrl: string) {
     output.embeds[0].fields.push(field);
   }
 
+  return await axios.post(discordWebhookUrl, output);
+}
+
+async function sendCommitsToDiscord(output: TimeIntervalData[], discordWebhookUrl: string) {
   return await axios.post(discordWebhookUrl, output);
 }
 
@@ -150,4 +162,4 @@ async function sendMessage(message: Commit, kind: DBInfo["webhook"]) {
   }
 }
 
-export { sendCommitsToMattermost, sendMessage };
+export { sendCommitsToDiscord, sendCommitsToMattermost, sendMessage };
