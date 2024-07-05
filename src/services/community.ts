@@ -78,7 +78,7 @@ async function sendCommitToMattermost(content: Commit, mattermostWebhookUrl: str
 }
 
 async function sendCommitsToMattermost(
-    ownerName:string, repoName: string, branchName: string,
+    ownerName:string, repoName: string,
   mattermostWebhookUrl: string
 ): Promise<void> {
   try {

@@ -61,7 +61,7 @@ const setJob = (settingInfo:DBInfo): void => {
   if (settingInfo.webhook.mattermost !== undefined) {
     //TODO 입력 날짜로 다시 바꾸기
     schedule.scheduleJob(jobName, /*{ hour, minute, dayOfWeek }*/ '* * * * *', () => {
-      sendCommitsToMattermost(settingInfo.owner.name, settingInfo.repo.name, "main", settingInfo.webhook.mattermost as string);
+      sendCommitsToMattermost(settingInfo.owner.name, settingInfo.repo.name, settingInfo.webhook.mattermost as string);
     });
   }
   
