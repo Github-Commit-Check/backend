@@ -146,6 +146,8 @@ router.delete("/:owner_name/:repo_name", async (req: Request, res: Response) => 
         const settingInfo = await setting.deleteInfo(ownerName,repoName);
 
         if (settingInfo) {
+            //TODO 기존 작업 삭제
+            
             return res.status(200).json({
                 message: "Success to Setting deleted",
             });
