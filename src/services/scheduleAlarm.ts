@@ -1,5 +1,5 @@
-import { getMessage } from "../utils/data";
-import { sendCommitsToMattermost, sendMessage } from "./community";
+import { getDiscordMessage } from "../utils/data";
+import { sendCommitsToMattermost, sendCommitsToDiscord, sendMessage } from "./community";
 import schedule from "node-schedule";
 import { DBInfo } from "../@types/db.interface";
 
@@ -35,6 +35,14 @@ interface DB {
   };
 }
 
+interface TimeIntervalData {
+  startDate: string;
+  endDate: string;
+  dayOfWeek: number;
+  committed: string[];
+  uncommitted: string[];
+}
+
 // TODO : 사용자가 입력한 정보를 받아서 스케줄러에 등록하기
 const setJob = (settingInfo:DBInfo): void => {
   // every sunday 2:30pm
@@ -42,9 +50,10 @@ const setJob = (settingInfo:DBInfo): void => {
   const { hour, minute, dayOfWeek } = settingInfo.schedule;
 
   if (settingInfo.webhook.discord !== undefined) {
-    // schedule.scheduleJob(jobName, { hour, minute, dayOfWeek }, () => {
-    //   sendCommitsToMattermost(settingInfo.owner.name, settingInfo.repo.name, settingInfo.webhook.mattermost as string);
-    // });
+    schedule.scheduleJob(jobName, { hour, minute, dayOfWeek }, async () => {
+      const output = await getDiscordMessage(settingInfo.owner.name, settingInfo.repo.name);
+      sendCommitsToDiscord(output as TimeIntervalData[], settingInfo.webhook.discord as string);
+    });
   }
   if (settingInfo.webhook.slack !== undefined) {
     
