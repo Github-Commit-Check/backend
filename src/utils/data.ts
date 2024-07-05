@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import dummyData from "../assets/dummyCommitData.json";
 import { listCommits } from "../services/connectRepository";
+import { throws } from "assert";
 
 dayjs.extend(isBetween);
 
@@ -42,8 +43,8 @@ const getCommitter = (commitInfo: CommitData): string => {
 };
 
 // TODO : connectRepository 모듈에서 GitHub 커밋 가져오는 함수 호출하기
-const getCommits = (): any => {
-  return listCommits("ssafy-11th-seoul10","2day-1algo");
+const getCommits = (ownerName: string, repoName: string): any => {
+  return listCommits(ownerName,repoName);
 };
 
 const processData = (datas: { contributors: string[]; data: CommitData[] }): TimeIntervalData[] => {
@@ -141,17 +142,16 @@ const makeDiscordMessage = (datas: TimeIntervalData[]): { embeds: DiscordEmbed[]
   return output;
 };
 
-const getMessage = async (userInfo: string, kind: string) => {
-  const commits = await getCommits(); // 유저 정보로 커밋 내역 불러오기
-  const processedData = processData(commits);
+const getDiscordMessage = async (ownerName: string, repoName: string) => {
+  
+  try {
+    const commits = await getCommits(ownerName, repoName); // 유저 정보로 커밋 내역 불러오기
+    const processedData = processData(commits);
 
-  if (kind === "discord") {
-    return makeDiscordMessage(processedData);
-  } else if (kind === "slack") {
-  } else if (kind === "mattermost") {
-  } else {
-    return new Error("잘못된 알람 종류입니다.");
+    return processedData;
+  } catch (error) {
+    console.error(error);
   }
 };
 
-export { getMessage };
+export { getDiscordMessage };
