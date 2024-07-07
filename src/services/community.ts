@@ -43,7 +43,7 @@ async function sendCommitToDiscord(content: Commit, discordWebhookUrl: string) {
   return await axios.post(discordWebhookUrl, output);
 }
 
-async function sendCommitsToDiscord(output: TimeIntervalData[], discordWebhookUrl: string) {
+async function sendCommitsToDiscord(output: { embeds: DiscordEmbed[] }, discordWebhookUrl: string) {
   return await axios.post(discordWebhookUrl, output);
 }
 
@@ -82,8 +82,6 @@ async function sendCommitsToMattermost(
   mattermostWebhookUrl: string
 ): Promise<void> {
   try {
-    // const mattermost = Mattermost(mattermostWebhookUrl);
-
     const commits: any[] = await listCommits(ownerName, repoName);
       
     // 커밋을 주별, 사용자별로 그룹화
@@ -134,15 +132,12 @@ async function sendCommitsToMattermost(
         messageText += "\n";
       });
 
-      return await axios.post(mattermostWebhookUrl, {
-        text: messageText,
-      });
-    // await mattermost.send({
-    //   text: messageText,
-    // //   channel_id: "kym6455m6iywmd9js7jbkyskya",
-    // });
-
-    // console.log("커밋 내역을 Mattermost에 성공적으로 전송했습니다.");
+    console.log("커밋 내역을 Mattermost에 성공적으로 전송했습니다.");
+    
+    return await axios.post(mattermostWebhookUrl, {
+      text: messageText,
+    });
+    
   } catch (error) {
     console.error("커밋 내역 전송 중 오류 발생:", error);
   }
