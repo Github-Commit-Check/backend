@@ -4,6 +4,8 @@ import cors from 'cors';
 
 import * as db from './utils/db';
 
+import {recoveryJob} from './services/scheduleAlarm';
+
 const app = express();
 
 db.connect();
@@ -27,8 +29,10 @@ app.get("/", async (req: Request, res: Response) => {
   res.send("Hello World!");
 });
 
-// TODO 기존 정기 작업 재생성
-
 app.listen(port, () => {
+
+  //기존 정기 작업 재생성
+  recoveryJob();
+  
   console.log(`Server is running on port ${port}`);
 });

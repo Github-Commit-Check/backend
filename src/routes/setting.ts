@@ -1,7 +1,7 @@
 import express, { Request, Response, Router } from "express";
 import * as setting from '../services/setting';
 import { DBInfo } from "../@types/db.interface";
-import { setJob } from "../services/scheduleAlarm";
+import { setJob, cancelJob } from "../services/scheduleAlarm";
 
 const router: Router = express.Router();
 
@@ -118,7 +118,10 @@ router.put("/:owner_name/:repo_name", async (req: Request, res: Response) => {
         const settingInfo = await setting.modifyInfo(ownerName, repoName, dbInfo);
 
         if (settingInfo) {
-            //TODO 기존 작업 삭제 후 새로운 작업 할당
+            // 기존 작업 삭제 후 새로운 작업 할당
+            cancelJob(settingInfo);
+            setJob(settingInfo);
+
             return res.status(200).json({
                 message: "Success to Setting Update"
             });
@@ -146,8 +149,9 @@ router.delete("/:owner_name/:repo_name", async (req: Request, res: Response) => 
         const settingInfo = await setting.deleteInfo(ownerName,repoName);
 
         if (settingInfo) {
-            //TODO 기존 작업 삭제
-            
+            // 기존 작업 삭제
+            cancelJob(settingInfo);
+
             return res.status(200).json({
                 message: "Success to Setting deleted",
             });

@@ -3,8 +3,9 @@ import { sendCommitsToMattermost, sendCommitsToDiscord, sendMessage } from "./co
 import schedule from "node-schedule";
 import { DBInfo } from "../@types/db.interface";
 import { DiscordEmbed } from "../@types/discord.interface";
+import Info from "../models/info";
 
-// const jobList = 
+// const jobList =
 interface DB {
   // 레포지토리 정보
   repo: {
@@ -30,9 +31,9 @@ interface DB {
   };
   // 스케줄링 일정
   schedule: {
-    hour: number,
-    minute: number,
-    dayOfWeek: number
+    hour: number;
+    minute: number;
+    dayOfWeek: number;
   };
 }
 
@@ -44,26 +45,62 @@ interface TimeIntervalData {
   uncommitted: string[];
 }
 
-const setJob = (settingInfo:DBInfo): void => {
+const recoveryJob = async (): Promise<void> => {
+  const settingInfos = await Info.find({});
+
+  for (const settingInfo of settingInfos) {
+    const jobName = settingInfo.owner.name + "/" + settingInfo.repo.name;
+    const { hour, minute, dayOfWeek } = settingInfo.schedule;
+
+    if (settingInfo.webhook.discord !== undefined) {
+      schedule.scheduleJob(jobName, { hour, minute, dayOfWeek }, async () => {
+        const output: { embeds: DiscordEmbed[] } = (await getDiscordMessage(
+          settingInfo.owner.name,
+          settingInfo.repo.name
+        )) as { embeds: DiscordEmbed[] };
+        sendCommitsToDiscord(output, settingInfo.webhook.discord as string);
+      });
+    } else if (settingInfo.webhook.slack !== undefined) {
+    } else if (settingInfo.webhook.mattermost !== undefined) {
+      schedule.scheduleJob(jobName, { hour, minute, dayOfWeek }, () => {
+        sendCommitsToMattermost(
+          settingInfo.owner.name,
+          settingInfo.repo.name,
+          settingInfo.webhook.mattermost as string
+        );
+      });
+    }
+  }
+};
+
+const setJob = (settingInfo: DBInfo): void => {
   // every sunday 2:30pm
   const jobName = settingInfo.owner.name + "/" + settingInfo.repo.name;
   const { hour, minute, dayOfWeek } = settingInfo.schedule;
 
   if (settingInfo.webhook.discord !== undefined) {
     schedule.scheduleJob(jobName, { hour, minute, dayOfWeek }, async () => {
-      const output: { embeds: DiscordEmbed[] } = await getDiscordMessage(settingInfo.owner.name, settingInfo.repo.name) as { embeds: DiscordEmbed[] };
+      const output: { embeds: DiscordEmbed[] } = (await getDiscordMessage(
+        settingInfo.owner.name,
+        settingInfo.repo.name
+      )) as { embeds: DiscordEmbed[] };
       sendCommitsToDiscord(output, settingInfo.webhook.discord as string);
     });
-  }
-  else if (settingInfo.webhook.slack !== undefined) {
-    
-  }
-  else if (settingInfo.webhook.mattermost !== undefined) {
+  } else if (settingInfo.webhook.slack !== undefined) {
+  } else if (settingInfo.webhook.mattermost !== undefined) {
     schedule.scheduleJob(jobName, { hour, minute, dayOfWeek }, () => {
-      sendCommitsToMattermost(settingInfo.owner.name, settingInfo.repo.name, settingInfo.webhook.mattermost as string);
+      sendCommitsToMattermost(
+        settingInfo.owner.name,
+        settingInfo.repo.name,
+        settingInfo.webhook.mattermost as string
+      );
     });
   }
-  
 };
 
-export { setJob };
+const cancelJob = (settingInfo: DBInfo): void => {
+  const jobName = settingInfo.owner.name + "/" + settingInfo.repo.name;
+  schedule.cancelJob(jobName);
+}
+
+export { setJob, recoveryJob, cancelJob };
