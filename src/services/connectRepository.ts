@@ -66,13 +66,7 @@ async function listCommits(ownerName: string, repoName: string) {
                     login: login,
                     id: id,
                   }
-                : /*null*/
-                {
-                  message: commitMessage,
-                  date: parsedDate,
-                  login: login,
-                  id: id,
-                };
+                : null
             })
             .filter((commit) => commit !== null);
 
