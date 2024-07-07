@@ -2,6 +2,7 @@ import { getDiscordMessage } from "../utils/data";
 import { sendCommitsToMattermost, sendCommitsToDiscord, sendMessage } from "./community";
 import schedule from "node-schedule";
 import { DBInfo } from "../@types/db.interface";
+import { DiscordEmbed } from "../@types/discord.interface";
 
 // const jobList = 
 interface DB {
@@ -43,7 +44,6 @@ interface TimeIntervalData {
   uncommitted: string[];
 }
 
-// TODO : 사용자가 입력한 정보를 받아서 스케줄러에 등록하기
 const setJob = (settingInfo:DBInfo): void => {
   // every sunday 2:30pm
   const jobName = settingInfo.owner.name + "/" + settingInfo.repo.name;
@@ -51,26 +51,19 @@ const setJob = (settingInfo:DBInfo): void => {
 
   if (settingInfo.webhook.discord !== undefined) {
     schedule.scheduleJob(jobName, { hour, minute, dayOfWeek }, async () => {
-      const output = await getDiscordMessage(settingInfo.owner.name, settingInfo.repo.name);
-      sendCommitsToDiscord(output as TimeIntervalData[], settingInfo.webhook.discord as string);
+      const output: { embeds: DiscordEmbed[] } = await getDiscordMessage(settingInfo.owner.name, settingInfo.repo.name) as { embeds: DiscordEmbed[] };
+      sendCommitsToDiscord(output, settingInfo.webhook.discord as string);
     });
   }
-  if (settingInfo.webhook.slack !== undefined) {
+  else if (settingInfo.webhook.slack !== undefined) {
     
   }
-  if (settingInfo.webhook.mattermost !== undefined) {
-    //TODO 입력 날짜로 다시 바꾸기
-    schedule.scheduleJob(jobName, /*{ hour, minute, dayOfWeek }*/ '* * * * *', () => {
+  else if (settingInfo.webhook.mattermost !== undefined) {
+    schedule.scheduleJob(jobName, { hour, minute, dayOfWeek }, () => {
       sendCommitsToMattermost(settingInfo.owner.name, settingInfo.repo.name, settingInfo.webhook.mattermost as string);
     });
   }
   
 };
-
-const test = () => {
-  //sendMessage("123", { discord: "https://google.com"});
-};
-
-test();
 
 export { setJob };
