@@ -5,7 +5,7 @@ const router: Router = express.Router();
 
 router.get("/commits", async (req: Request, res: Response) => {
   try {
-    const commits = await connect.listCommits("Github-Commit-Check","backend");
+    const commits = await connect.listCommits("ssafy-11th-seoul10","2day-1algo");
     res.status(200).json({
       message: "Commits listed successfully",
       data: commits,

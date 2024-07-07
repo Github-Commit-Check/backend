@@ -8,6 +8,14 @@ import { Commit } from "../@types/commit.interface";
 
 dotenv.config();
 
+interface TimeIntervalData {
+  startDate: string;
+  endDate: string;
+  dayOfWeek: number;
+  committed: string[];
+  uncommitted: string[];
+}
+
 const Mattermost = require("node-mattermost");
 
 async function sendCommitToDiscord(content: Commit, discordWebhookUrl: string) {
@@ -32,6 +40,10 @@ async function sendCommitToDiscord(content: Commit, discordWebhookUrl: string) {
     output.embeds[0].fields.push(field);
   }
 
+  return await axios.post(discordWebhookUrl, output);
+}
+
+async function sendCommitsToDiscord(output: { embeds: DiscordEmbed[] }, discordWebhookUrl: string) {
   return await axios.post(discordWebhookUrl, output);
 }
 
@@ -66,12 +78,10 @@ async function sendCommitToMattermost(content: Commit, mattermostWebhookUrl: str
 }
 
 async function sendCommitsToMattermost(
-    ownerName:string, repoName: string, branchName: string,
+    ownerName:string, repoName: string,
   mattermostWebhookUrl: string
 ): Promise<void> {
   try {
-    // const mattermost = Mattermost(mattermostWebhookUrl);
-
     const commits: any[] = await listCommits(ownerName, repoName);
       
     // 커밋을 주별, 사용자별로 그룹화
@@ -122,15 +132,12 @@ async function sendCommitsToMattermost(
         messageText += "\n";
       });
 
-      return await axios.post(mattermostWebhookUrl, {
-        text: messageText,
-      });
-    // await mattermost.send({
-    //   text: messageText,
-    // //   channel_id: "kym6455m6iywmd9js7jbkyskya",
-    // });
-
-    // console.log("커밋 내역을 Mattermost에 성공적으로 전송했습니다.");
+    console.log("커밋 내역을 Mattermost에 성공적으로 전송했습니다.");
+    
+    return await axios.post(mattermostWebhookUrl, {
+      text: messageText,
+    });
+    
   } catch (error) {
     console.error("커밋 내역 전송 중 오류 발생:", error);
   }
@@ -150,4 +157,4 @@ async function sendMessage(message: Commit, kind: DBInfo["webhook"]) {
   }
 }
 
-export { sendCommitsToMattermost, sendMessage };
+export { sendCommitsToDiscord, sendCommitsToMattermost, sendMessage };

@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
-import dummyData from "../assets/dummyCommitData.json";
+import { listCommits } from "../services/connectRepository";
 
 dayjs.extend(isBetween);
 
@@ -40,12 +40,41 @@ const getCommitter = (commitInfo: CommitData): string => {
   return message.split("_")[0];
 };
 
-// TODO : connectRepository 모듈에서 GitHub 커밋 가져오는 함수 호출하기
-const getCommits = (): any => {
-  return dummyData;
+// connectRepository 모듈에서 GitHub 커밋 가져오는 함수 호출
+const getCommits = async (ownerName: string, repoName: string): Promise<any> => {
+  const commitData = await listCommits(ownerName, repoName);
+
+  const contributors = await getContributors();
+
+  return {
+    contributors: contributors,
+    data: commitData
+  }
+
+  async function getContributors() {
+    const set = new Set(commitData.map((data) => {
+      const name = data.message.split("_")[0];
+      if (name.length <= 3 && name !== "감태수")
+        return name;
+      return "";
+    }));
+  
+    const contributor = [...set];
+  
+    contributor.sort((n1: string, n2: string) => {
+        if (n1 > n2) {
+            return 1;
+        }
+        else return -1;
+    });  
+
+    contributor.shift();
+    return contributor;
+  }
 };
 
 const processData = (datas: { contributors: string[]; data: CommitData[] }): TimeIntervalData[] => {
+
   // day of week (0 - 7) (0 or 7 is Sun)
 
   // 1. 사용자가 어떤 요일에 체크를 하는지 받아오기
@@ -78,6 +107,7 @@ const processData = (datas: { contributors: string[]; data: CommitData[] }): Tim
   const output: TimeIntervalData[] = Array.from({ length: checkDayOfWeek.length });
   // 6. 배열에 들어가는 객체엔 커밋 기간, 요일, 커밋한 사람에 대한 정보가 들어감
   const { contributors, data } = datas;
+
   const now = dayjs();
   for (let i = 0; i < dateDiffArray.length; i++) {
     output[i] = {
@@ -85,7 +115,7 @@ const processData = (datas: { contributors: string[]; data: CommitData[] }): Tim
       endDate: now.add(dateDiffArray[i][1], "day").format("YYMMDD"),
       dayOfWeek: now.add(dateDiffArray[i][1], "day").day(),
       committed: [],
-      uncommitted: [...contributors],
+      uncommitted: contributors,
     };
   }
 
@@ -131,8 +161,8 @@ const makeDiscordMessage = (datas: TimeIntervalData[]): { embeds: DiscordEmbed[]
   for (const data of datas) {
     const field: DiscordEmbedField = {
       name: `📅 ${data.startDate} ~ ${data.endDate} ${weeks[data.dayOfWeek]}`,
-      value: `✅ 커밋 완료:  ${data.committed.join(" ")}\n
-      ❌ 커밋 미완료: ${data.uncommitted.join(" ")}\n`,
+      value: `✅ 커밋 완료:  ${data.committed.join(" ")}
+      ❌ 커밋 미완료: ${data.uncommitted.join(" ")}\n\n`,
     };
     output.embeds[0].fields.push(field);
   }
@@ -140,17 +170,16 @@ const makeDiscordMessage = (datas: TimeIntervalData[]): { embeds: DiscordEmbed[]
   return output;
 };
 
-const getMessage = (userInfo: string, kind: string) => {
-  const commits = getCommits(); // 유저 정보로 커밋 내역 불러오기
-  const processedData = processData(commits);
+const getDiscordMessage = async (ownerName: string, repoName: string) => {
+  
+  try {
+    const commits = await getCommits(ownerName, repoName); // 유저 정보로 커밋 내역 불러오기
+    const processedData = processData(commits);
 
-  if (kind === "discord") {
     return makeDiscordMessage(processedData);
-  } else if (kind === "slack") {
-  } else if (kind === "mattermost") {
-  } else {
-    return new Error("잘못된 알람 종류입니다.");
+  } catch (error) {
+    console.error(error);
   }
 };
 
-export { getMessage };
+export { getDiscordMessage };

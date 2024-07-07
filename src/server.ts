@@ -27,6 +27,8 @@ app.get("/", async (req: Request, res: Response) => {
   res.send("Hello World!");
 });
 
+// TODO 기존 정기 작업 재생성
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

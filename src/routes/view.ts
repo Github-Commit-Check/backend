@@ -1,5 +1,4 @@
 import express, { Request, Response, Router } from 'express'
-import * as schedule from '../services/scheduleAlarm';
 
 const router: Router = express.Router();
 
