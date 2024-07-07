@@ -98,4 +98,9 @@ const setJob = (settingInfo: DBInfo): void => {
   }
 };
 
-export { setJob, recoveryJob };
+const cancelJob = (settingInfo: DBInfo): void => {
+  const jobName = settingInfo.owner.name + "/" + settingInfo.repo.name;
+  schedule.cancelJob(jobName);
+}
+
+export { setJob, recoveryJob, cancelJob };
