@@ -15,6 +15,8 @@ router.get("/:owner_name/:repo_name", async (req: Request, res: Response) => {
         const settingInfo = await setting.getInfo(ownerName, repoName);
     
         if (settingInfo) {
+            //console.log(settingInfo.webhook);
+
             return res.status(200).json({
                 info: settingInfo
             });        
