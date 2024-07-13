@@ -14,15 +14,16 @@ async function saveInfo(dbInfo: DBInfo) {
   }
 }
 
-async function getInfo(ownerId: string, repoName: string) {
+async function getInfo(ownerName: string, repoName: string) {
   try {
     const fillter = {
-      "owner.name": ownerId,
+      "owner.name": ownerName,
       "repo.name": repoName,
     };
     const settingInfo = await Info.findOne(fillter);
 
     return settingInfo;
+    
   } catch (error) {
     throw error;
   }
