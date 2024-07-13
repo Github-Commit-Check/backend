@@ -137,7 +137,7 @@ async function sendCommitsToMattermost(
         messageText += "\n";
       });
 
-    console.log("커밋 내역을 Mattermost에 성공적으로 전송했습니다.");
+    //console.log("커밋 내역을 Mattermost에 성공적으로 전송했습니다.");
     
     return await axios.post(mattermostWebhookUrl, {
       text: messageText,
@@ -149,13 +149,13 @@ async function sendCommitsToMattermost(
 }
 
 async function sendMessage(message: Commit, kind: DBInfo["webhook"]) {
-  //hasOwnPropery 나중에 문제 생길 수 있어서 수정해야 함
+
   //시간 + 런타임 에러 문제
-  if (kind.hasOwnProperty("discord")) {
+  if (kind.discord !== "") {
     return sendCommitToDiscord(message, kind.discord as string);
-  } else if (kind.hasOwnProperty("slack")) {
+  } else if (kind.slack !== "") {
     return sendCommitToSlack(message, kind.slack as string);
-  } else if (kind.hasOwnProperty("mattermost")) {
+  } else if (kind.mattermost !== "") {
     return sendCommitToMattermost(message, kind.mattermost as string);
   } else {
     return Promise.reject(new Error("잘못된 알람 종류입니다."));
